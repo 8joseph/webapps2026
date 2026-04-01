@@ -1,4 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-    Welcome to PayApp!
+    {% if user.is_authenticated %}
+        Welcome to PayApp, {{ user.username }}
+    {% else %}
+        Please login to use PayApp!
+    {% endif %}
 {% endblock %}

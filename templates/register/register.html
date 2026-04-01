@@ -1,5 +1,10 @@
-{% extends 'base.html' %}
+{%extends 'register/register-base.html' %}
+{% block register_content %}
+    <h2>Register</h2>
+    <form method="POST">
+     {% csrf_token %}
+    {{ form}}
+        <button class="btn btn-primary w-100 mt-3" type="submit">Register</button>
+    </form>
+{% endblock %}
 
-{% block content %}
-    PayApp register
-{% endblock %} 

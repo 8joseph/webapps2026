@@ -21,6 +21,6 @@ from register import views as register_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('payapp.urls'),name='home'),
-    path('register/', register_view.register, name='register'),
-    path('login/', register_view.login, name='login'),
+    path('register/', register_view.register_user, name='register'),
+    path('login/', register_view.login_user, name='login'),
 ]
