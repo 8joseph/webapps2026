@@ -1,4 +1,4 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from register.forms import RegisterPayAppUserForm
@@ -14,8 +14,6 @@ def login_user(request):
             login(request,user)
             return redirect('home')
 
-
-
     form = AuthenticationForm()
     return render(request, 'register/login.html', {'form': form})
 
@@ -30,3 +28,8 @@ def register_user(request):
             return redirect('login')
     form = RegisterPayAppUserForm()
     return render(request, 'register/register.html', {'form': form})
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('login')
