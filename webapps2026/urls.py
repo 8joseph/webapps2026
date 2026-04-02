@@ -24,4 +24,5 @@ urlpatterns = [
     path('register/', register_view.register_user, name='register'),
     path('login/', register_view.login_user, name='login'),
     path('logout/', register_view.logout_user, name='logout'),
+    path('admin-portal/', include('admin-portal.urls'))
 ]

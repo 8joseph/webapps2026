@@ -22,9 +22,9 @@
                       Admin
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                      <a class="dropdown-item" href="#">View Accounts</a>
+                      <a class="dropdown-item" href="{% url 'admin_accounts' %}">View Accounts</a>
                       <a class="dropdown-item" href="#">View Transactions</a>
-                      <a class="dropdown-item" href="#">Create New Admin</a>
+                      <a class="dropdown-item" href={% url 'register_admin' %}#">Create New Admin</a>
                     </div>
                   </li>
             {% endif %}
