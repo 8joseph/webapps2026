@@ -1,4 +1,50 @@
 {% extends 'base.html' %}
 {% block content %}
-    User transactions
+    <h2>{{ user.username }}'s Transactions</h2>
+
+    <table class='table'>
+    <thead>
+    <tr>
+        <th>Money in/out</th>
+        <th>User</th>
+        <th>Amount</th>
+        <th>Time</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for t in transactions %}
+            <tr
+                {% if request.user == t.payee %}
+                    class='table-success'
+                    {% else  %}
+                    class='table-danger'
+                    {% endif %}
+            >
+                <td>
+                    {% if request.user == t.payee %}
+                        IN
+                    {% else %}
+                        OUT
+                    {% endif %}
+                </td>
+                <td>
+                    {% if request.user == t.payee %}
+                        {{ t.payer.username }}
+                    {% else %}
+                        {{ t.payee.username }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if request.user == t.payee %}
+                        +{{ user_currency }}{{ t.amount }}
+                    {% else %}
+                        -{{ user_currency }}{{ t.amount }}
+                    {% endif %}
+                </td>
+                <td>{{ t.time }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+
 {% endblock %}

@@ -3,10 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import never_cache
-
+from . import models
 from payapp.forms import TransactionForm, RequestTransactionFrom
 from payapp.models import Transaction
 from register.models import PayAppUser
+from django.db.models import Q
+
 
 
 def get_currency_symbol_helper(c):
@@ -62,4 +64,8 @@ def request_transaction(request):
 
 @login_required(login_url='login')
 def user_transactions(request):
-    return render(request, 'payapp/user-transactions.html')
+    username= request.user.username
+    Transaction = models.Transaction.objects.filter(Q(payee__username=username)|Q(payer__username=username))
+    transactions = Transaction.all().order_by('-time')
+    user_currency = get_currency_symbol_helper(request.user.currency)
+    return render(request, 'payapp/user-transactions.html',{'transactions':transactions, 'user_currency': user_currency})

@@ -14,7 +14,7 @@
             <a href="/" class="nav-link">Home</a>
                 <a href="{% url 'new_transaction' %}" class="nav-link">Send Money</a>
                 <a href="{% url 'request_transaction' %}" class="nav-link">Request Money</a>
-                <a href="" class="nav-link">View Transactions</a>
+                <a href="{% url 'user-transactions' %}" class="nav-link">View Transactions</a>
 
             {% if user.is_superuser %}
                   <li class="nav-item dropdown">
@@ -23,7 +23,7 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                       <a class="dropdown-item" href="{% url 'admin_accounts' %}">View Accounts</a>
-                      <a class="dropdown-item" href="{% url 'user-transactions' %}">View Transactions</a>
+                      <a class="dropdown-item" href="{% url 'admin_transactions' %}">View All Transactions</a>
                       <a class="dropdown-item" href={% url 'register_admin' %}#">Create New Admin</a>
                     </div>
                   </li>

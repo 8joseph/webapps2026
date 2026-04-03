@@ -1,6 +1,9 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
+from payapp import models as payapp_models
+
+from payapp.models import Transaction
 from register import forms
 
 def check_admin(u):
@@ -26,5 +29,11 @@ def register_new_admin(request):
     else:
         form = forms.RegisterPayAppUserForm()
     return render(request, 'admin-portal/register-new-admin.html', {'form': form})
+
+@user_passes_test(check_admin)
+def admin_transactions(request):
+    Transaction = payapp_models.Transaction.objects.all()
+    transactions = Transaction.all().order_by('-time')
+    return render(request, 'admin-portal/admin-all-transactions.html', {'transactions':transactions})
 
 

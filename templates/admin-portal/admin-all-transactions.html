@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2>All Transactions</h2>
+    <table class='table'>
+    <thead>
+    <tr>
+        <th>Payer</th>
+        <th>Payee</th>
+        <th>Currency</th>
+        <th>Amount</th>
+        <th>Time</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for t in transactions %}
+            <tr>
+                <td>{{ t.payer }}</td>
+                <td>{{ t.payee }}</td>
+                <td>{{ t.currency }}</td>
+                <td>{{ t.amount }}</td>
+                <td>{{ t.time }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+
+{% endblock %}
