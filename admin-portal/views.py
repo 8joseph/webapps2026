@@ -23,7 +23,8 @@ def register_new_admin(request):
             u.is_superuser = True
             u.save()
             return redirect('home')
-    form = forms.RegisterPayAppUserForm()
+    else:
+        form = forms.RegisterPayAppUserForm()
     return render(request, 'admin-portal/register-new-admin.html', {'form': form})
 
 

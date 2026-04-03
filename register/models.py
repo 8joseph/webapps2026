@@ -8,4 +8,4 @@ class PayAppUser(AbstractUser):
         ('GBP', 'Great British Pound'),
     ]
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICE, default='EUR')
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=200.00)

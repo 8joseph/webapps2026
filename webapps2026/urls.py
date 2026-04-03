@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from register import views as register_view
+from payapp import views as payapp_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,5 +25,8 @@ urlpatterns = [
     path('register/', register_view.register_user, name='register'),
     path('login/', register_view.login_user, name='login'),
     path('logout/', register_view.logout_user, name='logout'),
-    path('admin-portal/', include('admin-portal.urls'))
+    path('admin-portal/', include('admin-portal.urls')),
+    path('new-transaction/', payapp_views.new_transaction, name='new_transaction'),
+    path('request-transaction/', payapp_views.request_transaction, name='request_transaction'),
+    path('transactions/', payapp_views.user_transactions, name='user-transactions')
 ]

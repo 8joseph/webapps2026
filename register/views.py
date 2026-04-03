@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
@@ -13,8 +14,10 @@ def login_user(request):
             user = form.get_user()
             login(request,user)
             return redirect('home')
-
-    form = AuthenticationForm()
+        # else:
+        #     messages.error(request, 'Username/Password Incorrect')
+    else:
+            form = AuthenticationForm()
     return render(request, 'register/login.html', {'form': form})
 
 
@@ -26,7 +29,8 @@ def register_user(request):
         if form.is_valid():
             form.save()
             return redirect('login')
-    form = RegisterPayAppUserForm()
+    else:
+        form = RegisterPayAppUserForm()
     return render(request, 'register/register.html', {'form': form})
 
 
