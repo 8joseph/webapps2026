@@ -3,6 +3,8 @@
 {% block transaction_content %}
     <h2>Send Money</h2>
     <form method="POST">
+
+    <p>Your current balance is {{ currency_symbol }}{{ user.balance }}</p>
      {% csrf_token %}
     {{ form}}
         <button class="btn btn-primary w-100 mt-3" type="submit">Send</button>
