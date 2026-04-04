@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from . import models
 from payapp.forms import TransactionForm, RequestTransactionFrom
@@ -60,12 +61,78 @@ def new_transaction(request):
 @login_required(login_url='login')
 def request_transaction(request):
     form = RequestTransactionFrom()
+    if request.method == "POST":
+        form = RequestTransactionFrom(request.POST)
+        if form.is_valid():
+            payee_name = request.user
+            payer = form.cleaned_data['payer']
+            amount = form.cleaned_data['amount']
+            if amount <= 0:
+                messages.error(request, "Amount requested must be greater than 0!")
+                return redirect('request_transaction')
+            if request.user == payer:
+                messages.error(request, "You cannot request money from yourself!")
+                return redirect('request_transaction')
+            new_transaction_entry = form.save(commit=False)
+            new_transaction_entry.payer = payer
+            new_transaction_entry.payee = request.user
+            new_transaction_entry.status = 'PENDING'
+            new_transaction_entry.save()
+            messages.success(request, f"Request was sent to {payer.username}")
+            return redirect('request_transaction')
+
     return render(request, 'payapp/request-transaction.html', {'form': form})
 
 @login_required(login_url='login')
 def user_transactions(request):
     username= request.user.username
-    Transaction = models.Transaction.objects.filter(Q(payee__username=username)|Q(payer__username=username))
-    transactions = Transaction.all().order_by('-time')
+
+    transactions = models.Transaction.objects.filter(Q(payee__username=username)|Q(payer__username=username)).all().order_by('-time')
+    pending_transactions = models.Transaction.objects.filter((Q(payer__username=username)) & Q(status="PENDING")).all().order_by('-time')
     user_currency = get_currency_symbol_helper(request.user.currency)
-    return render(request, 'payapp/user-transactions.html',{'transactions':transactions, 'user_currency': user_currency})
+    return render(request, 'payapp/user-transactions.html',{'transactions':transactions,'pending_transactions':pending_transactions, 'user_currency': user_currency})
+
+@login_required(login_url='login')
+def accept_transaction_request(request, transaction_id):
+    if request.method == "POST":
+        t = get_object_or_404(Transaction, id=transaction_id)
+        if t.payer != request.user:
+            messages.error(request, "You are unable to accept this transaction!")
+            return redirect('user-transactions')
+
+        if t.status != 'PENDING':
+            messages.error(request, "This transaction has already been processed!")
+            return redirect('user-transactions')
+        with transaction.atomic():
+            payer = PayAppUser.objects.select_for_update().get(username=t.payer)
+            payee = PayAppUser.objects.select_for_update().get(username=t.payee)
+            if payer.balance < t.amount:
+                messages.error(request, "Your balance is too low to accept this transaction!")
+                return redirect('user-transactions')
+            payer.balance -= t.amount
+            payee.balance += t.amount
+            payer.save()
+            payee.save()
+            t.status = 'COMPLETED'
+            t.time = timezone.now()
+            t.save()
+            messages.success(request, "Transaction successfully transferred")
+
+    return redirect('user-transactions')
+
+@login_required(login_url='login')
+def decline_transaction_request(request, transaction_id):
+    if request.method == "POST":
+        t = get_object_or_404(Transaction, id=transaction_id)
+        if t.payer != request.user:
+            messages.error(request, "You are unable to decline this transaction!")
+            return redirect('user-transactions')
+        if t.status != 'PENDING':
+            messages.error(request, "This transaction has already been processed!")
+            return redirect('user-transactions')
+        t.status = 'REJECTED'
+        t.time = timezone.now()
+        t.save()
+        messages.success(request, "Transaction has been declined")
+
+    return redirect('user-transactions')

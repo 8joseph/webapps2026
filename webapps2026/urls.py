@@ -28,5 +28,6 @@ urlpatterns = [
     path('admin-portal/', include('admin-portal.urls')),
     path('new-transaction/', payapp_views.new_transaction, name='new_transaction'),
     path('request-transaction/', payapp_views.request_transaction, name='request_transaction'),
-    path('transactions/', payapp_views.user_transactions, name='user-transactions')
+    path('transactions/', payapp_views.user_transactions, name='user-transactions'),
+    path('payapp/', include('payapp.urls')),
 ]
