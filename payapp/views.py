@@ -34,10 +34,10 @@ def new_transaction(request):
         form = TransactionForm(request.POST)
         if form.is_valid():
             with transaction.atomic():
-                payee_name = form.cleaned_data['payee']
+                payee_user = form.cleaned_data['payee']
                 amount = form.cleaned_data['amount']
                 payer = request.user
-                payee = PayAppUser.objects.select_for_update().get(username=payee_name)
+                payee = PayAppUser.objects.select_for_update().get(id=payee_user.id)
                 if payer.balance < amount:
                     messages.error(request, "Your balance is too low!")
                     return redirect('new_transaction')
@@ -104,8 +104,8 @@ def accept_transaction_request(request, transaction_id):
             messages.error(request, "This transaction has already been processed!")
             return redirect('user-transactions')
         with transaction.atomic():
-            payer = PayAppUser.objects.select_for_update().get(username=t.payer)
-            payee = PayAppUser.objects.select_for_update().get(username=t.payee)
+            payer = PayAppUser.objects.select_for_update().get(id=t.payer.id)
+            payee = PayAppUser.objects.select_for_update().get(id=t.payee.id)
             if payer.balance < t.amount:
                 messages.error(request, "Your balance is too low to accept this transaction!")
                 return redirect('user-transactions')
