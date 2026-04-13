@@ -1,8 +1,82 @@
 {% extends 'base.html' %}
 {% block content %}
     {% if user.is_authenticated %}
-        Welcome to PayApp, {{ user.username }}
+        <div class="mx-auto p-2">
+            <div class="row justify-content-center">
+
+            <div class="col-md-6 col-lg-5">
+
+                <div class="card shadow-sm p-4 mb-4">
+                    <h1>
+                        Welcome to PayApp, {{ user.username }}
+                    </h1>
+                    <h4>Your balance is:</h4>
+                    <h2>
+                       {{ currency_symbol }}{{ user.balance }}
+                    </h2>
+                    {% if pending_transactions > 0 %}
+                        <div class="alert alert-primary" role="alert">
+                         <p>ALERT: You have {{ pending_transactions }} requests for money!</p>
+                            <a type="button" class="btn btn-primary" style="max-width: 150px" href="{% url  'user-transactions'%}">View</a>
+                        </div>
+
+                    {% endif %}
+                </div>
+
+
+                <div class="card shadow-sm p-4">
+                    <h2>Recent Transactions</h2>
+                        <table class='table'>
+                            <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Amount</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in recent_transactions %}
+                                    <tr
+                                        {% if t.status == 'PENDING' %}
+                                            class='table-warning'
+                                        {% elif request.user == t.payee %}
+                                            class='table-success'
+                                            {% else  %}
+                                            class='table-danger'
+                                            {% endif %}
+                                    >
+
+                                        <td>
+                                            {% if request.user == t.payee %}
+                                                {{ t.payer.username }}
+                                            {% else %}
+                                                {{ t.payee.username }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if request.user == t.payee %}
+                                                +{{ currency_symbol }}{{ t.amount }}
+                                            {% else %}
+                                                -{{ currency_symbol }}{{ t.amount }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            </table>
+                </div>
+
+
+            </div>
+
+            </div> </div> </div>
+
+
+
+
+
+
+
     {% else %}
-        Please login to use PayApp!
+        Error: Please login to use PayApp!
     {% endif %}
 {% endblock %}

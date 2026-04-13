@@ -1,9 +1,11 @@
 {%extends 'register/register-base.html' %}
+{% load crispy_forms_tags %}
+
 {% block register_content %}
     <h2>Register new Admin</h2>
     <form method="POST">
      {% csrf_token %}
-    {{ form}}
+    {{ form | crispy}}
         <button class="btn btn-primary w-100 mt-3" type="submit">Create Admin</button>
     </form>
 {% endblock %}

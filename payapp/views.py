@@ -25,7 +25,12 @@ def get_currency_symbol_helper(c):
 
 @never_cache    #dont cache so user cannot logout and return to logged in pag
 def home(request):
-    return render(request, 'index.html')
+    currency = get_currency_symbol_helper(request.user.currency)
+    username = request.user.username
+    transactions = models.Transaction.objects.filter((Q(payee__username=username)|Q(payer__username=username)) & (Q(status="COMPLETED"))).all().order_by('-time')[:5]
+    pending_transactions = len(models.Transaction.objects.filter((Q(payer__username=username)) & Q(status="PENDING")).all())
+
+    return render(request, 'index.html',{'currency_symbol': currency, 'recent_transactions': transactions, 'pending_transactions': pending_transactions})
 
 @login_required(login_url='login')
 def new_transaction(request):
@@ -41,6 +46,9 @@ def new_transaction(request):
                 if payer.balance < amount:
                     messages.error(request, "Your balance is too low!")
                     return redirect('new_transaction')
+                if payer == payee:
+                    messages.error(request, "You cannot send money to yourself!")
+                    return redirect('new_transaction')
 
                 payer.balance -= amount
                 payer.save()
@@ -53,6 +61,7 @@ def new_transaction(request):
                 new_transaction_entry.payee = payee
                 new_transaction_entry.status = 'COMPLETED'
                 new_transaction_entry.save()
+                messages.success(request, "Transaction sent!")
                 return redirect('new_transaction')
 
     symbol = get_currency_symbol_helper(request.user.currency)
