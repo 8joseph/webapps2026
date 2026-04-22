@@ -69,9 +69,9 @@
                 </td>
                 <td>
                     {% if request.user == t.payee %}
-                        +{{ user_currency }}{{ t.amount }}
+                        +{{ user_currency }}{{ t.payee_amount }}
                     {% else %}
-                        -{{ user_currency }}{{ t.amount }}
+                        -{{ user_currency }}{{ t.payer_amount }}
                     {% endif %}
                 </td>
                 <td>{{ t.time }}</td>

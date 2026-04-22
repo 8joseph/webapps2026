@@ -40,25 +40,28 @@ def new_transaction(request):
         if form.is_valid():
             with transaction.atomic():
                 payee_user = form.cleaned_data['payee']
-                amount = form.cleaned_data['amount']
+                payer_amount = form.cleaned_data['payer_amount']
+                payee_amount = form.cleaned_data['payer_amount']  # TODO: CHANGE THIS!!!
                 payer = request.user
                 payee = PayAppUser.objects.select_for_update().get(id=payee_user.id)
-                if payer.balance < amount:
+                if payer.balance < payer_amount:
                     messages.error(request, "Your balance is too low!")
                     return redirect('new_transaction')
                 if payer == payee:
                     messages.error(request, "You cannot send money to yourself!")
                     return redirect('new_transaction')
 
-                payer.balance -= amount
+                payer.balance -= payer_amount
                 payer.save()
 
-                payee.balance += amount
+                payee.balance += payer_amount
                 payee.save()
 
                 new_transaction_entry = form.save(commit=False)
                 new_transaction_entry.payer = payer
+                new_transaction_entry.payer_amount = payer_amount
                 new_transaction_entry.payee = payee
+                new_transaction_entry.payee_amount = payee_amount
                 new_transaction_entry.status = 'COMPLETED'
                 new_transaction_entry.save()
                 messages.success(request, "Transaction sent!")
@@ -75,8 +78,9 @@ def request_transaction(request):
         if form.is_valid():
             payee_name = request.user
             payer = form.cleaned_data['payer']
-            amount = form.cleaned_data['amount']
-            if amount <= 0:
+            payee_amount = form.cleaned_data['payee_amount']
+            payer_amount = form.cleaned_data['payee_amount'] #TODO: CHANGE THIS!!!
+            if payee_amount <= 0:
                 messages.error(request, "Amount requested must be greater than 0!")
                 return redirect('request_transaction')
             if request.user == payer:
@@ -84,7 +88,9 @@ def request_transaction(request):
                 return redirect('request_transaction')
             new_transaction_entry = form.save(commit=False)
             new_transaction_entry.payer = payer
+            new_transaction_entry.payer_amount = payer_amount
             new_transaction_entry.payee = request.user
+            new_transaction_entry.payee = payee_amount
             new_transaction_entry.status = 'PENDING'
             new_transaction_entry.save()
             messages.success(request, f"Request was sent to {payer.username}")
@@ -115,11 +121,11 @@ def accept_transaction_request(request, transaction_id):
         with transaction.atomic():
             payer = PayAppUser.objects.select_for_update().get(id=t.payer.id)
             payee = PayAppUser.objects.select_for_update().get(id=t.payee.id)
-            if payer.balance < t.amount:
+            if payer.balance < t.payee_amount:
                 messages.error(request, "Your balance is too low to accept this transaction!")
                 return redirect('user-transactions')
-            payer.balance -= t.amount
-            payee.balance += t.amount
+            payer.balance -= t.payee_amount
+            payee.balance += t.payee_amount
             payer.save()
             payee.save()
             t.status = 'COMPLETED'

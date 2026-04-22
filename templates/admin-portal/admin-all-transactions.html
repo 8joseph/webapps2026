@@ -6,8 +6,8 @@
     <tr>
         <th>Payer</th>
         <th>Payee</th>
-        <th>Currency</th>
-        <th>Amount</th>
+        <th>Payer Amount</th>
+        <th>Payee Amount</th>
         <th>Status</th>
         <th>Time</th>
     </tr>
@@ -17,8 +17,8 @@
             <tr>
                 <td>{{ t.payer }}</td>
                 <td>{{ t.payee }}</td>
-                <td>{{ t.currency }}</td>
-                <td>{{ t.amount }}</td>
+                <td>{{ t.payer_amount }} {{ t.payer_currency }}</td>
+                <td>{{ t.payee_amount }} {{ t.payee_currency }}</td>
                 <td>{{ t.status }}</td>
                 <td>{{ t.time }}</td>
             </tr>
