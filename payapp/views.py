@@ -24,7 +24,7 @@ def get_currency_symbol_helper(c):
     return '?'
 
 
-@never_cache    #dont cache so user cannot logout and return to logged in pag
+@never_cache    #dont cache so user cannot logout and return to logged in page
 def home(request):
     currency = get_currency_symbol_helper(request.user.currency)
     username = request.user.username
@@ -132,7 +132,7 @@ def accept_transaction_request(request, transaction_id):
         with transaction.atomic():
             payer = PayAppUser.objects.select_for_update().get(id=t.payer.id)
             payee = PayAppUser.objects.select_for_update().get(id=t.payee.id)
-            if payer.balance < t.payee_amount:
+            if payer.balance < t.payer_amount:
                 messages.error(request, "Your balance is too low to accept this transaction!")
                 return redirect('user-transactions')
             payer.balance -= t.payer_amount
@@ -163,7 +163,7 @@ def decline_transaction_request(request, transaction_id):
 
     return redirect('user-transactions')
 
-
+#function for calling the REST api
 def call_conversion_api(cur1 ,cur2, amount):
     url = f'https://127.0.0.1:8000/webapps2026/conversion/{cur1}/{cur2}/{amount}/'
     print("api function called")

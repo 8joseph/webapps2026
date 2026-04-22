@@ -1,3 +1,4 @@
+import requests
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -27,7 +28,10 @@ def register_user(request):
     if request.method == 'POST':
         form = RegisterPayAppUserForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save(commit=False)
+            #amount of money for new user is £200
+            user.balance = call_conversion_api('GBP', user.currency, 200)
+            user.save()
             return redirect('login')
     else:
         form = RegisterPayAppUserForm()
@@ -37,3 +41,22 @@ def register_user(request):
 def logout_user(request):
     logout(request)
     return redirect('login')
+
+
+
+def call_conversion_api(cur1 ,cur2, amount):
+    url = f'https://127.0.0.1:8000/webapps2026/conversion/{cur1}/{cur2}/{amount}/'
+    print("api function called")
+    try:
+        response = requests.get(url, verify=False)#verify needs to be false otherwise https will be rejected
+        print("response")
+        if response.status_code == 200:
+            print("status code 200")
+            data = response.json()
+            new_amount = data['amount']
+            return new_amount
+        else:
+            return None
+    except:
+        return None
+

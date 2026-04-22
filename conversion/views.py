@@ -30,11 +30,12 @@ def conversion(request, cur1, cur2, amount):
         if cur1 in CURRENCIES and cur2 in CURRENCIES:
             if cur1 == cur2:
                 converted_amount = amount
+                rate = 1.0
             else:
                 rate = CONVERSIONS[cur1][cur2]
                 converted_amount = amount * rate
-            return Response({'amount' : converted_amount})
+            return Response({'amount' : converted_amount, 'conversion_rate' : rate}, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'Invalid currency code'})
+            return Response({'error': 'Invalid currency code'}, status=status.HTTP_400_BAD_REQUEST)
     except ValueError:
         return Response({'error': 'Invalid amount'}, status=status.HTTP_400_BAD_REQUEST)
