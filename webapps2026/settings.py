@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'register',
     'payapp',
+    'conversion',
     'django_extensions',
     'rest_framework',
 ]

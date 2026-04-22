@@ -17,6 +17,7 @@ Including another URLconf
 from django.urls import path, include
 from register import views as register_view
 from payapp import views as payapp_views
+from conversion import views as conversion_views
 
 urlpatterns = [
     path('webapps2026/', include([
@@ -29,6 +30,7 @@ urlpatterns = [
         path('request-transaction/', payapp_views.request_transaction, name='request_transaction'),
         path('transactions/', payapp_views.user_transactions, name='user-transactions'),
         path('payapp/', include('payapp.urls')),
+        path('conversion/', include('conversion.urls')),
     ]))
 
 ]
