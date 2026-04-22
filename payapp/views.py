@@ -19,7 +19,7 @@ def get_currency_symbol_helper(c):
         case 'USD':
             return '$'
         case 'GBP':
-            return '$'
+            return '£'
     return '?'
 
 
@@ -90,7 +90,7 @@ def request_transaction(request):
             new_transaction_entry.payer = payer
             new_transaction_entry.payer_amount = payer_amount
             new_transaction_entry.payee = request.user
-            new_transaction_entry.payee = payee_amount
+            new_transaction_entry.payee_amount = payee_amount
             new_transaction_entry.status = 'PENDING'
             new_transaction_entry.save()
             messages.success(request, f"Request was sent to {payer.username}")

@@ -9,7 +9,7 @@
         <div class="col-md-8 mx-auto mb-3">
         <div class="card shadow-sm">
             <div class="card-body">
-                <h4 class="card-title">{{ t.payee }} requested {{ user_currency }}{{ t.amount }}</h4>
+                <h4 class="card-title">{{ t.payee }} requested {{ user_currency }}{{ t.payee_amount }}</h4>
                 <h6 class="card-subtitle mb-2 text-muted">{{ t.time }}</h6>
                 <div class="row">
                     <form method="POST" action="{% url 'accept_transaction' t.id %}" class="d-inline w-auto">
