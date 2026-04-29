@@ -9,6 +9,7 @@ from payapp.forms import TransactionForm, RequestTransactionFrom
 from payapp.models import Transaction
 from register.models import PayAppUser
 from django.db.models import Q
+from decimal import Decimal
 import requests
 
 
@@ -59,10 +60,10 @@ def new_transaction(request):
                     messages.error(request, "You cannot send money to yourself!")
                     return redirect('new_transaction')
 
-                payer.balance -= payer_amount
+                payer.balance -= Decimal(str(payer_amount))
                 payer.save()
 
-                payee.balance += payee_amount
+                payee.balance += Decimal(str(payee_amount))
                 payee.save()
 
                 new_transaction_entry = form.save(commit=False)
@@ -136,8 +137,8 @@ def accept_transaction_request(request, transaction_id):
             if payer.balance < t.payer_amount:
                 messages.error(request, "Your balance is too low to accept this transaction!")
                 return redirect('user-transactions')
-            payer.balance -= t.payer_amount
-            payee.balance += t.payee_amount
+            payer.balance -= Decimal(str(t.payer_amount))
+            payee.balance += Decimal(str(t.payee_amount))
             payer.save()
             payee.save()
             t.status = 'COMPLETED'
@@ -174,7 +175,7 @@ def call_conversion_api(cur1 ,cur2, amount):
         if response.status_code == 200:
             print("status code 200")
             data = response.json()
-            new_amount = data['amount']
+            new_amount = Decimal((data['amount']))
             return new_amount
         else:
             return None
