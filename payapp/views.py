@@ -25,6 +25,7 @@ def get_currency_symbol_helper(c):
 
 
 @never_cache    #dont cache so user cannot logout and return to logged in page
+@login_required(login_url='login')
 def home(request):
     currency = get_currency_symbol_helper(request.user.currency)
     username = request.user.username

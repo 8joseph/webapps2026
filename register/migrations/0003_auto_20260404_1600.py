@@ -4,6 +4,8 @@ from django.contrib.auth.hashers import make_password
 from django.db import migrations
 
 
+#register an administrative user upon activating the model
+#with username: 'admin1', password:'admin1'
 def generate_admin1(apps, schema_editor):
     User = apps.get_model('register', 'PayAppUser')
     #if the admin1 user already exists dont overwrite!
